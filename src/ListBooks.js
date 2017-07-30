@@ -1,22 +1,41 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import PropTypes from 'prop-types'
 import Books from './Books'
+import * as BooksAPI from './BooksAPI'
 
 
 class ListBooks extends Component{
-	static propTypes = {
-    	books: PropTypes.array.isRequired,
-    	onMoveBook: PropTypes.func.isRequired
-  	}
-	moveBooks(){
-		if(this.props.onMoveBooks){
-			this.props.onMoveBooks
-		}
-	}
+	state = {
+      books: []
+    }
+
+    componentDidMount(){
+      BooksAPI.getAll().then((books) => {
+      	let shelf = {
+      		read:[],
+      		wantToRead :[],
+      		currentlyReading:[]
+      	}
+      	books.forEach((book) => {
+      		shelf[book.shelf].push(book.id)
+      	});
+      	this.props.onMoveShelf(shelf)
+        this.setState({books})
+      })
+    }
+
+    moveBook = (movedBook,shelf) => {
+      const books = this.state.books.slice();
+      let book = books.find((book) => { return book.id === movedBook.id})
+      book.shelf = shelf
+      BooksAPI.update(book, shelf).then((shelf) =>{
+      	this.props.onMoveShelf(shelf)
+      	this.setState({books: books})
+      })
+    }
 
 	render(){
-		const books = this.props.books
+		const books = this.state.books
 		const currentlyReading = books.filter((book) => book.shelf==='currentlyReading')
 		const wantToRead = books.filter((book) => book.shelf === 'wantToRead')
 		const read = books.filter((book) => book.shelf === 'read')
@@ -30,12 +49,11 @@ class ListBooks extends Component{
               <div>
                 <div className="bookshelf">
                   <h2 className="bookshelf-title">Currently Reading</h2>
-
                   <div className="bookshelf-books">
                     <ol className="books-grid">
                       {currentlyReading.map((book) => (
                     	<li key={book.id}>
-							<Books book={book} />
+							<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
 						</li>
                       ))}
                     </ol>
@@ -47,7 +65,7 @@ class ListBooks extends Component{
                     <ol className="books-grid">
                       {wantToRead.map((book) => (
                     	<li key={book.id}>
-							<Books book={book} />
+							<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
 						</li>
                       ))}
                     </ol>
@@ -59,7 +77,7 @@ class ListBooks extends Component{
                     <ol className="books-grid">
                       {read.map((book) => (
                     	<li key={book.id}>
-							<Books book={book} />
+							<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
 						</li>
                       ))}
                     </ol>
