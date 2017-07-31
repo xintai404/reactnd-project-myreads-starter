@@ -9,11 +9,11 @@ class SearchBooks extends Component{
 		query: '',
 		result: []
 	}
-    
+
     search = _.debounce((query) => {
     	const shelf = this.props.myshelf
     	BooksAPI.search(query.trim()).then(books => {
-    		if(books.error){
+    		if(books && books.error){
     			this.setState({result: []})
     		}else{
     			books.forEach(book => {
@@ -27,6 +27,8 @@ class SearchBooks extends Component{
     			})
 				this.setState({result:books})
 			}
+		}, err => {
+			this.setState({result: []})
 		})
 	}, 500)
 
@@ -34,12 +36,13 @@ class SearchBooks extends Component{
 		this.search(query)
 	}    
 
-	addTo = (movedBook, shelf) => {
+	addTo = (movedBook, shelf) => {        
+		console.log(this.props.myshelf)
 		const result = this.state.result.slice();
       	let book = result.find((book) => { return book.id === movedBook.id})
       	book.shelf = shelf
       	BooksAPI.update(book, shelf).then(shelf => {
-      		this.props.onMoveShelf(shelf)
+      		this.props.onMoveShelf(shelf)   
       		this.setState({result: result})
       	})
 	}

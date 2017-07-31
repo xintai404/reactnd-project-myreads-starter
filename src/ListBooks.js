@@ -10,18 +10,8 @@ class ListBooks extends Component{
     }
 
     componentDidMount(){
-      BooksAPI.getAll().then((books) => {
-      	let shelf = {
-      		read:[],
-      		wantToRead :[],
-      		currentlyReading:[]
-      	}
-      	books.forEach((book) => {
-      		shelf[book.shelf].push(book.id)
-      	});
-      	this.props.onMoveShelf(shelf)
-        this.setState({books})
-      })
+    	console.log('listbooks')
+      this.setState({books: this.props.books})
     }
 
     moveBook = (movedBook,shelf) => {
@@ -35,7 +25,7 @@ class ListBooks extends Component{
     }
 
 	render(){
-		const books = this.state.books
+		const books = this.props.books
 		const currentlyReading = books.filter((book) => book.shelf==='currentlyReading')
 		const wantToRead = books.filter((book) => book.shelf === 'wantToRead')
 		const read = books.filter((book) => book.shelf === 'read')
@@ -43,45 +33,45 @@ class ListBooks extends Component{
 		return(
 			<div className="list-books">
             <div className="list-books-title">
-              <h1>MyReads</h1>
+              	<h1>MyReads</h1>
             </div>
             <div className="list-books-content">
-              <div>
-                <div className="bookshelf">
-                  <h2 className="bookshelf-title">Currently Reading</h2>
-                  <div className="bookshelf-books">
-                    <ol className="books-grid">
-                      {currentlyReading.map((book) => (
-                    	<li key={book.id}>
-							<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
-						</li>
-                      ))}
-                    </ol>
-                  </div>
+              	<div>
+                	<div className="bookshelf">
+                  	<h2 className="bookshelf-title">Currently Reading</h2>
+                  	<div className="bookshelf-books">
+                   		<ol className="books-grid">
+                      		{currentlyReading.map((book) => (
+                    		<li key={book.id}>
+								<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
+							</li>
+                      		))}
+                    	</ol>
+                  	</div>
                 </div>
                 <div className="bookshelf">
-                  <h2 className="bookshelf-title">Want to Read</h2>
-                  <div className="bookshelf-books">
-                    <ol className="books-grid">
-                      {wantToRead.map((book) => (
-                    	<li key={book.id}>
-							<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
-						</li>
-                      ))}
-                    </ol>
-                  </div>
+                  	<h2 className="bookshelf-title">Want to Read</h2>
+                  	<div className="bookshelf-books">
+                    	<ol className="books-grid">
+                      		{wantToRead.map((book) => (
+                    		<li key={book.id}>
+								<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
+							</li>
+                      		))}
+                    	</ol>
+                  	</div>
                 </div>
                 <div className="bookshelf">
-                  <h2 className="bookshelf-title">Read</h2>
-                  <div className="bookshelf-books">
-                    <ol className="books-grid">
-                      {read.map((book) => (
-                    	<li key={book.id}>
-							<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
-						</li>
-                      ))}
-                    </ol>
-                  </div>
+                  	<h2 className="bookshelf-title">Read</h2>
+                  	<div className="bookshelf-books">
+                    	<ol className="books-grid">
+                      		{read.map((book) => (
+                    		<li key={book.id}>
+								<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
+							</li>
+                      	))}
+                    	</ol>
+                  	</div>
                 </div>
               </div>
             </div>
