@@ -7,43 +7,38 @@ import './App.css'
 
 class BooksApp extends React.Component {
     state = {
-        myshelf:{
-            read:[],
-            wantToRead:[],
-            currentlyReading:[]
-        }
+        books:[]
     }
-
-    booksOfShelf = []
 
     componentDidMount(){
         BooksAPI.getAll().then((books) => {
-            let shelf = {
-                read:[],
-                wantToRead :[],
-                currentlyReading:[]
-            }
-            books.forEach((book) => {
-                shelf[book.shelf].push(book.id)
-                this.booksOfShelf.push(book)
-            });
-            this.setState({shelf})
+            this.setState({books})
         })   
     }
 
-    updateShelf = (shelf) => {
-        this.setState({myshelf: shelf})
+    updateBooks = (target, shelf) => {
+        const books = JSON.parse(JSON.stringify(this.state.books))
+        let book = books.find(book => book.id === target.id)
+        if(book){
+            book.shelf = shelf
+        }else{
+            books.push(book)
+        }
+        BooksAPI.update(target, shelf).then(() =>{
+            this.setState({books})
+        })
+        
     }
 
-    render() {
+    render() {   
         return (
             <div className="app">
                 <Route exact path="/" render={()=>(
-                    <ListBooks myshelf={this.state.myshelf} books={this.booksOfShelf} onMoveShelf={(shelf)=> this.updateShelf(shelf)}/>
+                    <ListBooks books={this.state.books} onUpdateShelf={(book, shelf)=> this.updateBooks(book, shelf)}/>
                 )} />
 
                 <Route path="/search" render={() =>(
-                    <SearchBooks myshelf={this.state.myshelf} onMoveShelf={(shelf)=> this.updateShelf(shelf)} />
+                    <SearchBooks books={this.state.books} onAddToShelf={(book, shelf)=> this.updateBooks(book, shelf)} />
                 )} />
             </div>
         )

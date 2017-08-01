@@ -7,28 +7,27 @@ import _ from 'lodash'
 class SearchBooks extends Component{
 	state={
 		query: '',
-		result: []
+		searchedBooks: []
 	}
 
     search = _.debounce((query) => {
-    	const shelf = this.props.myshelf
+    	const myBooks = this.props.books
     	BooksAPI.search(query.trim()).then(books => {
     		if(books && books.error){
-    			this.setState({result: []})
+    			this.setState({searchedBooks: []})
     		}else{
     			books.forEach(book => {
-    				if(shelf.read.indexOf(book.id)!==-1){
-    					book.shelf='read'
-    				}else if(shelf.wantToRead.indexOf(book.id)!==-1){
-    					book.shelf='wantToRead';
-    				}else if(shelf.currentlyReading.indexOf(book.id)!==-1){
-    					book.shelf ='currentlyReading'
+    				let b = myBooks.find(bk => bk.id === book.id)
+    				if(b){
+    					book.shelf = b.shelf
+    				}else{
+    					book.shelf = 'none'
     				}
     			})
-				this.setState({result:books})
+				this.setState({searchedBooks:books})
 			}
 		}, err => {
-			this.setState({result: []})
+			this.setState({searchedBooks: []})
 		})
 	}, 500)
 
@@ -37,18 +36,14 @@ class SearchBooks extends Component{
 	}    
 
 	addTo = (movedBook, shelf) => {        
-		console.log(this.props.myshelf)
-		const result = this.state.result.slice();
-      	let book = result.find((book) => { return book.id === movedBook.id})
+		const seachedBooks = JSON.parse(JSON.stringify(this.state.searchedBooks))
+      	let book = seachedBooks.find((book) => { return book.id === movedBook.id})
       	book.shelf = shelf
-      	BooksAPI.update(book, shelf).then(shelf => {
-      		this.props.onMoveShelf(shelf)   
-      		this.setState({result: result})
-      	})
+      	this.setState({seachedBooks: seachedBooks})
+      	this.props.onAddToShelf(book, shelf) 
 	}
 
 	render(){    
-		const { result } = this.state;
 		return (
 			<div className="search-books">
 	            <div className="search-books-bar">
@@ -59,7 +54,7 @@ class SearchBooks extends Component{
 	            </div>
 	            <div className="search-books-results">
 	                <ol className="books-grid">
-						{result.map((book) => (
+						{this.state.searchedBooks.map((book) => (
 	                    	<li key={book.id}>
 								<Books book={book} onChangeShelf={(book, shelf) => this.addTo(book,shelf)}/>
 							</li>

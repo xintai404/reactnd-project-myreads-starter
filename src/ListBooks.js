@@ -1,27 +1,11 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import Books from './Books'
-import * as BooksAPI from './BooksAPI'
 
 
 class ListBooks extends Component{
-	state = {
-      books: []
-    }
-
-    componentDidMount(){
-    	console.log('listbooks')
-      this.setState({books: this.props.books})
-    }
-
-    moveBook = (movedBook,shelf) => {
-      const books = this.state.books.slice();
-      let book = books.find((book) => { return book.id === movedBook.id})
-      book.shelf = shelf
-      BooksAPI.update(book, shelf).then((shelf) =>{
-      	this.props.onMoveShelf(shelf)
-      	this.setState({books: books})
-      })
+    moveShelf = (movedBook,shelf) => {
+      	this.props.onUpdateShelf(movedBook, shelf)
     }
 
 	render(){
@@ -43,7 +27,7 @@ class ListBooks extends Component{
                    		<ol className="books-grid">
                       		{currentlyReading.map((book) => (
                     		<li key={book.id}>
-								<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
+								<Books book={book} onChangeShelf={(book, shelf) => this.moveShelf(book,shelf)}/>
 							</li>
                       		))}
                     	</ol>
@@ -55,7 +39,7 @@ class ListBooks extends Component{
                     	<ol className="books-grid">
                       		{wantToRead.map((book) => (
                     		<li key={book.id}>
-								<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
+								<Books book={book} onChangeShelf={(book, shelf) => this.moveShelf(book,shelf)}/>
 							</li>
                       		))}
                     	</ol>
@@ -67,7 +51,7 @@ class ListBooks extends Component{
                     	<ol className="books-grid">
                       		{read.map((book) => (
                     		<li key={book.id}>
-								<Books book={book} onChangeShelf={(book, shelf) => this.moveBook(book,shelf)}/>
+								<Books book={book} onChangeShelf={(book, shelf) => this.moveShelf(book,shelf)}/>
 							</li>
                       	))}
                     	</ol>

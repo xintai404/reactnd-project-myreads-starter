@@ -6,7 +6,6 @@ class Books extends Component{
 		onChangeShelf: PropTypes.func.isRequired
 	}
 	moveTo = (book, shelf) => {
-		book.shelf = shelf;
 		this.props.onChangeShelf(book, shelf);
 	}
 	render(){
