@@ -18,7 +18,7 @@ class SearchBooks extends Component{
     		}else{
     			books.forEach(book => {
     				let b = myBooks.find(bk => bk.id === book.id)
-    				if(b){
+    				if(b && book.shelf !== b.shelf){
     					book.shelf = b.shelf
     				}else{
     					book.shelf = 'none'
@@ -35,12 +35,14 @@ class SearchBooks extends Component{
 		this.search(query)
 	}    
 
-	addTo = (movedBook, shelf) => {        
-		const seachedBooks = JSON.parse(JSON.stringify(this.state.searchedBooks))
+	addTo = (movedBook, shelf) => {              
+		const seachedBooks = this.state.searchedBooks 
       	let book = seachedBooks.find((book) => { return book.id === movedBook.id})
-      	book.shelf = shelf
+      	if(book.shelf !== shelf){
+      		book.shelf = shelf
+      	}
+      	this.props.onAddToShelf(movedBook, shelf) 
       	this.setState({seachedBooks: seachedBooks})
-      	this.props.onAddToShelf(book, shelf) 
 	}
 
 	render(){    
@@ -56,7 +58,7 @@ class SearchBooks extends Component{
 	                <ol className="books-grid">
 						{this.state.searchedBooks.map((book) => (
 	                    	<li key={book.id}>
-								<Books book={book} onChangeShelf={(book, shelf) => this.addTo(book,shelf)}/>
+								<Books book={book} onChangeShelf={this.addTo}/>
 							</li>
                       	))}
 	                </ol>

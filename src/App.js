@@ -19,10 +19,10 @@ class BooksApp extends React.Component {
     updateBooks = (target, shelf) => {
         const books = JSON.parse(JSON.stringify(this.state.books))
         let book = books.find(book => book.id === target.id)
-        if(book){
+        if(book && book.shelf !== shelf){
             book.shelf = shelf
         }else{
-            books.push(book)
+            books.push(target)
         }
         BooksAPI.update(target, shelf).then(() =>{
             this.setState({books})
@@ -34,11 +34,11 @@ class BooksApp extends React.Component {
         return (
             <div className="app">
                 <Route exact path="/" render={()=>(
-                    <ListBooks books={this.state.books} onUpdateShelf={(book, shelf)=> this.updateBooks(book, shelf)}/>
+                    <ListBooks books={this.state.books} onUpdateShelf={ this.updateBooks}/>
                 )} />
 
                 <Route path="/search" render={() =>(
-                    <SearchBooks books={this.state.books} onAddToShelf={(book, shelf)=> this.updateBooks(book, shelf)} />
+                    <SearchBooks books={this.state.books} onAddToShelf={ this.updateBooks} />
                 )} />
             </div>
         )
