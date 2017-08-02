@@ -17,3 +17,6 @@ $ npm install
 ```sh
 $ npm start
 ```
+## License
+
+[MIT](http://opensource.org/licenses/MIT)
